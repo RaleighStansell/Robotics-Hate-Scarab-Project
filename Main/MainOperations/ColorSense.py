@@ -46,7 +46,36 @@ class ColorSensor:
                 while self.out_pin.value() == 1:
                     pass  # Wait for the signal to go low
         return count
-    
+    def read_signature(self):
+        cyan = self.read_color("Cyan")
+        magenta = self.read_color("Magenta")
+        yellow = self.read_color("Yellow")
+
+        return (cyan, magenta, yellow)
+
+    # transforms the measured color signature to a normalized RGB value
+    def normalize(self, sig):
+        c, m, y = sig
+        max_val = max(sig)
+
+        if max_val == 0:
+            return (0, 0, 0)
+
+        return (
+            int((c / max_val) * 255),
+            int((m / max_val) * 255),
+            int((y / max_val) * 255)
+        )
+
+    # compares the measured color signature to a target signature with a given tolerance
+    def is_color(self, target_sig, tolerance=0.20):
+        measured = self.normalize(self.read_signature())
+
+        for i in range(3):
+            if abs(measured[i] - target_sig[i]) > (target_sig[i] * tolerance):
+                return False
+
+        return True
 
 # while True:
 #     # Create a ColorSensor object with the appropriate pin numbers

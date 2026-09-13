@@ -6,7 +6,7 @@ class ColorSensor:
     def __init__(self, s0, s1, s2, s3, out_pin):
         # Control pins
         self.s0 = Pin(s0, Pin.OUT) # Magenta Color
-        self.s1 = Pin(s1, Pin.OUT) # Cyan Color
+        self.s1 = Pin(s1, Pin.OUT) # Blue Color
         self.s2 = Pin(s2, Pin.OUT) # Green Color
         self.s3 = Pin(s3, Pin.OUT) # Red Color
         # Output pin from sensor

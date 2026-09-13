@@ -53,22 +53,39 @@ class TCS3200:
         red = rgb["RED"]
         green = rgb["GREEN"]
         blue = rgb["BLUE"]
-        if(red>100 and blue>100 and green>100):
-            if(red > blue*1.5 and green > blue*1.5):
-                return "Yellow"
-            elif(blue*1.5 > red and blue*1.5 > green):
-                return "Cyan"
-            elif(red > green and blue*1.5 > green):
-                return "Magenta"
+        if(red<150 and blue<100 and green<100):
+            return "Black"
         else:
-            return "Unknown"
+            if((red*0.75) > blue*1.25 and green > blue*1.25):
+                return "Yellow"
+            elif((blue*1.25) > (red*0.75) and blue*1.25 > green):
+                return "Cyan"
+            elif((red*0.75) > green and blue*1.25 > green):
+                return "Magenta"
+            else:
+                return "Unknown"
 
+
+sensor = TCS3200(s0=2, s1=3, s2=4, s3=5, out_pin=6)
+
+Team1 = Pin(7, Pin.OUT)
+Team2 = Pin(8, Pin.OUT)
+Team3 = Pin(9, Pin.OUT)
 
 while True:
 
-    sensor = TCS3200(s0=2, s1=3, s2=4, s3=5, out_pin=6)
-
     rgb = sensor.read_rgb()
     color = sensor.detect_color(rgb)
-    print("RGB:", rgb, "Detected:", color)
+    if(Team1.value() == 1):
+        detected_color = "Yellow"
+    elif(Team2.value() == 1):
+        detected_color = "Cyan"
+    elif(Team3.value() == 1):
+        detected_color = "Magenta"
+    else:
+        detected_color = "Unknown"
+    if(color == detected_color):
+        print("color found, color:", color, "RGB:", rgb)
+    else:
+        print("color not found, color:", color, "RGB:", rgb)
     sleep(0.2)

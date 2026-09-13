@@ -9,8 +9,9 @@ class Metal_Detector:
 
     def read_metal(self):
         if self.sensor_pin.value() == 1:
+            time.sleep(0.2)
             return True
         else:
+            time.sleep(0.2)
             return False
-        time.sleep(0.2)
         

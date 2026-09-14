@@ -1,72 +1,76 @@
 from machine import Pin
 import time
 
-ir = Pin(15, Pin.IN)
+ir= Pin(15, Pin.IN)
 
-YELLOW  = 0xffa25d   # btn 1
-MAGENTA = 0xff629d   # btn 2
-CYAN    = 0xffe21d   # btn 3
+# Values derived from Remote_Decoder.py
+yellow  = 0xffa25d   #btn 1
+magenta = 0xff629d   #btn 2
+cyan    = 0xffe21d   #btn 3 
 
-def wait_for_low():
+# start of pulse
+def sense_for_low():
     while ir.value() == 1:
         pass
-
-def wait_for_high():
+# end of pulse
+def sense_for_high():
     while ir.value() == 0:
-        pass
+        pass    
 
-def measure_low():
-    wait_for_low()
-    start = time.ticks_us()
-    wait_for_high()
-    end = time.ticks_us()
+def low_detected():
+    sense_for_low()
+    start= time.ticks_us()
+    sense_for_high()
+    end= time.ticks_us()
     return time.ticks_diff(end, start)
 
-def measure_high():
-    wait_for_high()
-    start = time.ticks_us()
-    wait_for_low()
-    end = time.ticks_us()
+def high_detected():
+    sense_for_high()
+    start= time.ticks_us()
+    sense_for_low()
+    end= time.ticks_us()
     return time.ticks_diff(end, start)
 
-def decode_nec():
-    leader_low = measure_low()
-    if leader_low < 8000 or leader_low > 12000:
+def decode_NEC():
+    lead_low = low_detected()
+    if lead_low < 8000 or lead_low > 12000:
         return None
 
-    leader_high = measure_high()
-    if leader_high < 3000 or leader_high > 6000:
+    lead_high = high_detected()
+    if lead_high < 3000 or lead_high > 6000:
         return None
 
     bits = ""
-    for _ in range(32):
-        low = measure_low()
-        high = measure_high()
+    for _ in range (32):
+        low = low_detected()
+        high = high_detected()
+
         if high > 1000:
             bits += "1"
-        else:
-            bits += "0"
+
+        else: bits += "0"
 
     return int(bits, 2)
 
-print("Color IR Decoder Ready...")
+print ("Press remote to change color.")
 
-last_time = 0
-
+last_time = 0 
 while True:
-    code = decode_nec()
-    if code is not None:
+    button = decode_NEC()
+    if button is not None:
         now = time.ticks_ms()
         if time.ticks_diff(now, last_time) > 200:
-            if code == YELLOW:
+            if button == yellow:
                 print("YELLOW")
-            elif code == MAGENTA:
+            elif button == magenta:
                 print("MAGENTA")
-            elif code == CYAN:
+            elif button == cyan:
                 print("CYAN")
-            else:
-                print("Other:", hex(code))
-            print("----------------------")
+            else: 
+                print ("Unknown Button Pressed:", hex(button))
+
+            print("-------------------")
+
             last_time = now
      
 

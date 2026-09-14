@@ -3,6 +3,7 @@ from utime import sleep
 import time
 
 class ColorSensor:
+    # Constructor to initialize the color sensor with the specified control and output pins
     def __init__(self, s0, s1, s2, s3, out_pin):
         # Control pins
         self.s0 = Pin(s0, Pin.OUT) # Magenta Color
@@ -16,6 +17,7 @@ class ColorSensor:
         self.s0.value(1)
         self.s1.value(0)
 
+    # Method to read the frequency corresponding to the specified color
     def read_color(self, color):
         # Set the filter for the specified color
         if(color == 'Yellow'):
